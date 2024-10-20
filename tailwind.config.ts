@@ -23,7 +23,7 @@ const config = {
         fill: {
           1: "rgba(255, 255, 255, 0.10)",
         },
-        crmGradient: "#0B1739",
+        crmGradient: "#081028",
         indigo: {
           500: "#6172F3",
           700: "#3538CD",
@@ -51,11 +51,9 @@ const config = {
         },
         blue: {
           25: "#F5FAFF",
-          100: "#E6F2FF",
+          100: "#0B1739",
           500: "#AEB9E1",
-          600: "##0B1739",
-          700: "#175CD3",
-          900: "#194185",
+          600: "#081028",
         },
         sky: {
           1: "#F3F9FF",
@@ -76,7 +74,7 @@ const config = {
         },
       },
       backgroundImage: {
-        "crm-gradient": "linear-gradient(90deg, #0B1739 0%, #0B1739 100%)",
+        "crm-gradient": "linear-gradient(90deg, #081028 0%, #081028 100%)",
         "gradient-mesh": "url('/icons/gradient-mesh.svg')",
         "crm-green-gradient":
           "linear-gradient(90deg, #01797A 0%, #489399 100%)",
