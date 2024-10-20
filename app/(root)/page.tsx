@@ -1,5 +1,4 @@
-'use client'
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import HeaderBox from '@/components/HeaderBox';
 import StatsCard from '@/components/StatsCard';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,9 @@ import newsignup from "../../public/icons/newsignup.svg"
 import star from "../../public/icons/Star.svg";
 import WebsiteVisitsChart from '@/components/WebsiteVisitsChart';
 import useSWR from 'swr';
+import { SignedIn, UserButton } from '@clerk/nextjs';
+import ChartWrapper from '@/components/ChartWrapper';
+import { StatsCardProps } from '@/types';
 
 const fetcher = async (url: string) => {
   const response = await fetch(url);
@@ -159,11 +161,16 @@ function Home() {
             user={loggedIn()?.firstName || "Guest"}
             subtext="Measure your app’s performance and report traffic data."
           />
-          <div className="hidden md:flex md:flex-row md:justify-evenly md:w-[30%]">
+          <div className="flex items-center justify-between gap-2 md:gap-4 md:w-[30%]">
             <Button className="text-white bg-blue-100 mb-2 sm:mb-0">
               export report <ArrowDown />
             </Button>
-            <Button className="text-white bg-purple-500">create report</Button>
+            <Button className="text-white bg-purple-500 mb-2 sm:mb-0">
+              create report
+            </Button>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
         </header>
         <div className="flex flex-row justify-evenly w-full flex-wrap">
@@ -179,8 +186,7 @@ function Home() {
         </div>
         {/* <WebsiteVisitsChart total={{value: statsData[0].value, isPositive:statsData[0].trend.isPositive }} /> */}
 
-        <WebsiteVisitsChart total={{value: statsData[0].value, isPositive:statsData[0].trend.isPositive }} />
-
+        <ChartWrapper statsData={statsData} />
       </div>
     </section>
   );

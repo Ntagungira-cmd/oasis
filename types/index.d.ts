@@ -1,4 +1,4 @@
-declare type User = {
+export declare type User = {
   id: string;
   email: string;
   firstName: string;
@@ -9,22 +9,34 @@ declare type User = {
   postalCode: string;
 };
 
-declare interface SideBarProps {
-  user: User;
+export declare type ClerkUser = {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  color: string;
+};
+
+export declare interface SideBarProps {
+  user: ClerkUser;
 }
 
-declare type HeaderBoxProps = {
+export declare type HeaderBoxProps = {
   type?: "title" | "greeting";
   title: string;
   subtext: string;
   user: string;
 };
 
-declare interface MobileNavProps {
-  user: User;
+export declare interface MobileNavProps {
+  user: ClerkUser;
 }
 
-interface StatsCardProps {
+export declare interface ChartWrapperProps {
+  statsData: StatsCardProps[];
+}
+
+export interface StatsCardProps {
   label: string;
   value: string | number;
   icon: string;
@@ -35,12 +47,12 @@ interface StatsCardProps {
   className?: string;
 }
 
-declare interface VisitsData {
+export declare interface VisitsData {
   date: string;
   visits: number;
 }
 
-declare interface AreaChartProps {
+export declare interface AreaChartProps {
   data?: VisitsData[];
   title?: string;
   total?: {

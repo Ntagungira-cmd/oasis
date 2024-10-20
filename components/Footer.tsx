@@ -1,36 +1,25 @@
-// import { logoutAccount } from "@/lib/actions/user.actions";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React from "react";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-const Footer = ({ user, type = "desktop" }: FooterProps) => {
-  const router = useRouter();
-
-  const handleLogOut = async () => {
-    //const loggedOut = await logoutAccount();
-
-    // if (loggedOut) router.push("/sign-in");
-  };
-
+const Footer = async({type="desktop"}) => {
+  const user = await currentUser();
+  if (!user) redirect("/sign-in");
   return (
     <footer className="footer">
       <div className={type === "mobile" ? "footer_name-mobile" : "footer_name"}>
-        <p className="text-xl font-bold text-gray-700">{user?.firstName[0]}</p>
+        <p className="text-xl font-bold text-gray-700">{user?.firstName?.[0] ?? ''}</p>
       </div>
 
       <div
         className={type === "mobile" ? "footer_email-mobile" : "footer_email"}
       >
         <h1 className="text-14 truncate text-blue-500 font-semibold">
-          {user?.firstName}
+          {user?.firstName + " " + user?.lastName}
         </h1>
         <p className="text-14 truncate font-normal text-blue-500">
-          {user?.email}
+          {user?.emailAddresses[0].emailAddress}
         </p>
-      </div>
-
-      <div className="footer_image" onClick={handleLogOut}>
-        <Image src="icons/logout.svg" fill alt="crm" />
       </div>
     </footer>
   );

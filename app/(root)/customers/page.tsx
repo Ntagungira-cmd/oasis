@@ -19,7 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { ArrowDown } from "lucide-react";
 import { Search } from "lucide-react";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+
 
 const CUSTOMERS_DATA = [
   {
@@ -73,7 +76,7 @@ function Customers() {
       countryFilter === "all" ? true : customer.country === countryFilter;
     return matchesSearch && matchesCountry;
   });
-  
+
   //calculate number of pages
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -84,28 +87,50 @@ function Customers() {
 
   return (
     <Card className="w-full border-none">
-      <CardHeader>
-        <CardTitle className="text-white">Customers</CardTitle>
-      </CardHeader>
+      <div className="flex flex-row justify-between">
+        <CardHeader>
+          <CardTitle className="text-white">Customers</CardTitle>
+        </CardHeader>
+        <div className="flex items-center justify-around gap-2 md:gap-4 md:w-[30%]">
+          <Button className="text-white bg-blue-100 mb-2 sm:mb-0">
+            export report <ArrowDown />
+          </Button>
+          <Button className="text-white bg-purple-500 mb-2 sm:mb-0">
+            create report
+          </Button>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
+      </div>
       <CardContent>
         <div className="flex gap-4 mb-4">
-          <div className="relative flex-1 w-[250px]">
+          <div className="relative flex-1 w-[250px] outline-none">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground text-blue-500" />
             <Input
               placeholder="Search customers..."
-              className="pl-8 outline-0 font-semibold bg-blue-100 text-blue-500 border-none"
+              className="pl-8 outline-none font-semibold bg-blue-100 text-blue-500 border-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <Select value={countryFilter} onValueChange={setCountryFilter}>
-            <SelectTrigger className="w-[180px] border-none bg-blue-100 text-white">
+            <SelectTrigger className="w-[180px] border-none bg-blue-100 text-white outline-none">
               <SelectValue placeholder="Filter by country" />
             </SelectTrigger>
-            <SelectContent className="bg-blue-100 text-white">
-              <SelectItem value="all">All Countries</SelectItem>
+            <SelectContent className="bg-blue-100 text-white border-none">
+              <SelectItem
+                value="all"
+                className="hover:bg-purple-500 hover:text-white transition-colors duration-200 text-blue-500 font-semibold"
+              >
+                All Countries
+              </SelectItem>
               {uniqueCountries.map((country) => (
-                <SelectItem key={country} value={country}>
+                <SelectItem
+                  key={country}
+                  value={country}
+                  className="hover:bg-purple-500 hover:text-white transition-colors duration-200 text-blue-500 font-semibold"
+                >
                   {country}
                 </SelectItem>
               ))}
@@ -115,24 +140,24 @@ function Customers() {
 
         <div>
           <Table>
-            <TableHeader>
-              <TableRow className="bg-[#0B1739]">
-                <TableHead className="text-white text-md font-bold border-0">
+            <TableHeader className="border-none">
+              <TableRow className="bg-[#0B1739] border-blue-500">
+                <TableHead className="text-white text-md font-bold border-none">
                   Name
                 </TableHead>
-                <TableHead className="text-white text-md font-bold border-0">
+                <TableHead className="text-white text-md font-bold border-none">
                   Email
                 </TableHead>
-                <TableHead className="text-white text-md font-bold border-0">
+                <TableHead className="text-white text-md font-bold border-none">
                   Address
                 </TableHead>
-                <TableHead className="text-white text-md font-bold border-0">
+                <TableHead className="text-white text-md font-bold border-none">
                   City
                 </TableHead>
-                <TableHead className="text-white text-md font-bold border-0">
+                <TableHead className="text-white text-md font-bold border-none">
                   Country
                 </TableHead>
-                <TableHead className="text-white text-md font-bold border-0">
+                <TableHead className="text-white text-md font-bold border-none">
                   Postal Code
                 </TableHead>
               </TableRow>
@@ -141,7 +166,11 @@ function Customers() {
               {paginatedData.map((customer, index) => (
                 <TableRow
                   key={customer.id}
-                  className={index % 2 === 0 ? "bg-[#0B1739]" : "bg-[#081028]"}
+                  className={
+                    index % 2 === 0
+                      ? "bg-[#0B1739] border-none"
+                      : "bg-[#081028] border-none"
+                  }
                 >
                   <TableCell className="text-white border-none font-semibold">{`${customer.firstName} ${customer.lastName}`}</TableCell>
                   <TableCell className="text-white border-none font-semibold">

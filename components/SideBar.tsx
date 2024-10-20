@@ -1,56 +1,19 @@
-'use client'
-
 import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { sidebarLinks } from "@/constants";
-import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import Footer from "./Footer";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import NavWrapper from './NavWrapper';
 
-const SideBar = ({ user }:SideBarProps) => {
-  const pathname = usePathname();
+
+const SideBar = async () => {
+
+  const user = await currentUser();
+  if (!user) redirect("/sign-in");
+
   return (
     <section className="sidebar">
-      <nav className="flex flex-col gap-4 shadow-sm">
-        <Link href="/" className="mb-12 cursor-pointer flex items-center gap-2">
-          <Image
-            src="/icons/logo.svg"
-            width={34}
-            height={34}
-            alt="oasis logo"
-            className="size-[24px] max-xl:size-14"
-          />
-          <h1 className="sidebar-logo">Oasis</h1>
-        </Link>
-        {sidebarLinks.map((item) => {
-          const isActive =
-            pathname === item.route || pathname.startsWith(`${item.route}/`);
-
-          return (
-            <Link
-              href={item.route}
-              key={item.label}
-              className={cn("sidebar-link", { "bg-crm-gradient": isActive })}
-            >
-              <div className="relative size-6">
-                <Image
-                  src={item.imgURL}
-                  alt={item.label}
-                  fill
-                  className={cn({
-                    "brightness-[3] invert-0": isActive,
-                  })}
-                />
-              </div>
-              <p className={cn("sidebar-label", { "!text-white": isActive })}>
-                {item.label}
-              </p>
-            </Link>
-          );
-        })}
-      </nav>
-      <Footer user={user} />
+      <NavWrapper/>
+      <Footer/>
     </section>
   );
 };
