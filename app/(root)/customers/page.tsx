@@ -33,22 +33,19 @@ const fetcher = async (url: string) => {
   return response.json();
 };
 
+
 function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [countryFilter, setCountryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-    fetcher,
-    {
-      refreshInterval: 60000 * 30,
-      dedupingInterval: 60000 * 5,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
+  const { data, error, isLoading } = useSWR(`/api/customers`, fetcher, {
+    refreshInterval: 60000 * 30,
+    dedupingInterval: 60000 * 5,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   // Error handling
   if (error) {

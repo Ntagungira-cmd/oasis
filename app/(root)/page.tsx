@@ -27,7 +27,7 @@ const fetcher = async (url: string) => {
 function Home() {
   // SWR hooks for data fetching with caching
   const { data: bounceRate, error: bounceError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/bounce_rate.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    "/api/bounce_rate",
     fetcher,
     {
       refreshInterval: 60000 * 30, // Refetch every 30 minutes
@@ -38,7 +38,7 @@ function Home() {
   );
 
   const { data: newUsers, error: newUsersError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/new_users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    "/api/new_users",
     fetcher,
     {
       refreshInterval: 60000 * 30,
@@ -49,7 +49,7 @@ function Home() {
   );
 
   const { data: sessionData, error: sessionError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/session.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    "/api/session",
     fetcher,
     {
       refreshInterval: 60000 * 30,
@@ -63,19 +63,15 @@ function Home() {
     data: visitors,
     error: visitorsError,
     isLoading,
-  } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/visitors.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-    fetcher,
-    {
-      refreshInterval: 60000 * 30,
-      dedupingInterval: 60000 * 5,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
+  } = useSWR("/api/visitors", fetcher, {
+    refreshInterval: 60000 * 30,
+    dedupingInterval: 60000 * 5,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const { data: visits, error: visitsError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/visits_data.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    "/api/visits_data",
     fetcher,
     {
       refreshInterval: 60000 * 30,
@@ -173,18 +169,24 @@ function Home() {
           </div>
         </header>
         <div className="flex flex-row justify-evenly w-full flex-wrap">
-          {isLoading ? <Loader />: statsData.map((stat, index) => (
-            <StatsCard
-              key={index}
-              label={stat.label}
-              value={stat.value}
-              trend={stat.trend}
-              icon={stat.icon}
-            />
-          ))}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            statsData.map((stat, index) => (
+              <StatsCard
+                key={index}
+                label={stat.label}
+                value={stat.value}
+                trend={stat.trend}
+                icon={stat.icon}
+              />
+            ))
+          )}
         </div>
 
-        {!isLoading &&(<ChartWrapper statsData={statsData} visits={dailySessions} />)}
+        {!isLoading && (
+          <ChartWrapper statsData={statsData} visits={dailySessions} />
+        )}
       </div>
     </section>
   );
