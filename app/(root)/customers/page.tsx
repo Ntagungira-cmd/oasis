@@ -67,6 +67,7 @@ function Customers() {
     new Set(data.map((customer: User) => customer.country))
   );
 
+  // Filter based on country
   const filteredData = data.filter((customer: User) => {
     const matchesSearch = Object.values(customer).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -86,7 +87,7 @@ function Customers() {
 
   return (
     <Card className="w-full border-none">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row flex-wrap justify-between">
         <CardHeader>
           <CardTitle className="text-white">Customers</CardTitle>
         </CardHeader>
@@ -103,7 +104,7 @@ function Customers() {
         </div>
       </div>
       <CardContent>
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-row flex-wrap gap-4 mb-4">
           <div className="relative flex-1 w-[250px] outline-none">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground text-blue-500" />
             <Input
@@ -193,14 +194,13 @@ function Customers() {
           </Table>
         </div>
 
-        <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex flex-row flex-wrap items-center justify-between space-x-2 py-4">
           <div className="text-sm text-blue-500 text-muted-foreground">
             Showing {startIndex + 1} to{" "}
             {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
             {filteredData.length} entries
           </div>
 
-          {/* Pagination Button Controls */}
           <div className="flex space-x-2 text-blue-500 font-semibold">
             <Button
               variant="outline"
@@ -211,7 +211,7 @@ function Customers() {
             >
               Previous
             </Button>
-            {/* Pagination Numbers */}
+          
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button
                 key={page}
