@@ -16,9 +16,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { AreaChartProps, VisitsData } from "@/types";
 
 const WebsiteVisitsChart: React.FC<AreaChartProps> = ({
-  data = generateSampleData(),
+  data=[],
   title = "Total visits",
   total,
 }) => {
@@ -34,8 +35,11 @@ const WebsiteVisitsChart: React.FC<AreaChartProps> = ({
   // Calculate percentage with proper decimal places
   const calculatePercentage = (value: number | string) => {
     const numValue = typeof value === "string" ? parseFloat(value) : value;
-    return (numValue / 10000).toFixed(1);
+    return (numValue / 1000).toFixed(1);
   };
+
+  //map each visit in data to a day starting from 30 days ago
+  const mappedData = mapVisitsToDates(data);
 
   return (
     <Card className="w-full bg-gradient-to-b from-blue-100 to-blue-600 shadow-none border-0">
@@ -59,7 +63,7 @@ const WebsiteVisitsChart: React.FC<AreaChartProps> = ({
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={data}
+              data={mappedData}
               margin={{
                 top: 5,
                 right: 30,
@@ -125,30 +129,27 @@ const WebsiteVisitsChart: React.FC<AreaChartProps> = ({
   );
 };
 
-// Helper function to generate sample data
-function generateSampleData(): VisitsData[] {
-  const data: VisitsData[] = [];
+// Helper function to map visits to dates
+function mapVisitsToDates(
+  visits: VisitsData[]
+): {date:string ,visits: number }[] {
   const today = new Date();
+  const mappedData: { date: string; visits: number }[] = [];
 
-  for (let i = 29; i >= 0; i--) {
+  for (let i = 0; i < visits.length; i++) {
     const date = new Date(today);
-    date.setDate(date.getDate() - i);
+    date.setDate(date.getDate() - (visits.length - i));
 
-    const dayOfWeek = date.getDay();
-    const baseVisits = 3000;
-    const weekendDrop = dayOfWeek === 0 || dayOfWeek === 6 ? 0.7 : 1;
-    const randomVariation = 0.8 + Math.random() * 0.4;
-
-    data.push({
+    mappedData.push({
       date: date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      visits: Math.floor(baseVisits * weekendDrop * randomVariation),
+      visits: visits[i].visits,
     });
   }
 
-  return data;
+  return mappedData;
 }
 
 export default WebsiteVisitsChart;

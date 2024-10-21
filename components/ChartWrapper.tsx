@@ -2,9 +2,9 @@
 
 import React from 'react'
 import WebsiteVisitsChart from './WebsiteVisitsChart';
-import { ChartWrapperProps } from '@/types';
+import {ChartWrapperProps} from '@/types';
 
-function ChartWrapper({ statsData }: ChartWrapperProps) {
+function ChartWrapper({ statsData, visits }: ChartWrapperProps) {
   return (
     <div>
       <WebsiteVisitsChart
@@ -12,6 +12,7 @@ function ChartWrapper({ statsData }: ChartWrapperProps) {
           value: statsData[0].value,
           isPositive: statsData[0]?.trend?.isPositive ?? true,
         }}
+        data = {visits}
       />
     </div>
   );

@@ -25,7 +25,6 @@ export declare type HeaderBoxProps = {
   type?: "title" | "greeting";
   title: string;
   subtext: string;
-  user: string;
 };
 
 export declare interface MobileNavProps {
@@ -34,6 +33,7 @@ export declare interface MobileNavProps {
 
 export declare interface ChartWrapperProps {
   statsData: StatsCardProps[];
+  visits: VisitsData[];
 }
 
 export interface StatsCardProps {
@@ -48,7 +48,6 @@ export interface StatsCardProps {
 }
 
 export declare interface VisitsData {
-  date: string;
   visits: number;
 }
 

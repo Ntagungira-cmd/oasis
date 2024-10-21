@@ -1,19 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import HeaderBox from '@/components/HeaderBox';
-import StatsCard from '@/components/StatsCard';
-import { Button } from '@/components/ui/button';
+"use client";
+
+import HeaderBox from "@/components/HeaderBox";
+import StatsCard from "@/components/StatsCard";
+import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
-import React from 'react'
+import React from "react";
 import view from "../../public/icons/visits.svg";
 import users from "../../public/icons/users.svg";
-import newsignup from "../../public/icons/newsignup.svg"
+import newsignup from "../../public/icons/newsignup.svg";
 import star from "../../public/icons/Star.svg";
-import WebsiteVisitsChart from '@/components/WebsiteVisitsChart';
-import useSWR from 'swr';
-import { SignedIn, UserButton } from '@clerk/nextjs';
-import ChartWrapper from '@/components/ChartWrapper';
-import { StatsCardProps } from '@/types';
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import ChartWrapper from "@/components/ChartWrapper";
+import useSWR from "swr";
+import { VisitsData } from "@/types";
+import Loader from "@/components/Loader";
 
+// Fetcher function
 const fetcher = async (url: string) => {
   const response = await fetch(url);
   if (!response.ok) {
@@ -23,142 +25,130 @@ const fetcher = async (url: string) => {
 };
 
 function Home() {
+  // SWR hooks for data fetching with caching
+  const { data: bounceRate, error: bounceError } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/bounce_rate.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      dedupingInterval: 60000 * 30, // Cache for 30 minutes before refetching
+      revalidateOnFocus: false, // Do not refetch when the window regains focus
+      revalidateOnReconnect: false, // Do not refetch when network reconnects
+    }
+  );
 
-  // // SWR hooks for data fetching
-  // const { data: bounceRate, error: bounceError } = useSWR(
-  //   `${process.env.NEXT_PUBLIC_BASE_URL}/bounce_rate.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-  //   fetcher,
-  //   {
-  //     refreshInterval: 60000, // Refresh every 60 seconds
-  //     revalidateOnFocus: true,
-  //   }
-  // );
+  const { data: newUsers, error: newUsersError } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/new_users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      dedupingInterval: 60000 * 30,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
 
-  // const { data: newUsers, error: newUsersError } = useSWR(
-  //   `${process.env.NEXT_PUBLIC_BASE_URL}/new_users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-  //   fetcher,
-  //   {
-  //     refreshInterval: 60000,
-  //   }
-  // );
+  const { data: sessionData, error: sessionError } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/session.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      dedupingInterval: 60000 * 30,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
 
-  // const { data: sessionData, error: sessionError } = useSWR(
-  //   `${process.env.NEXT_PUBLIC_BASE_URL}/session.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-  //   fetcher,
-  //   {
-  //     refreshInterval: 60000,
-  //   }
-  // );
+  const { data: visitors, error: visitorsError, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/visitors.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      dedupingInterval: 60000 * 30,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
 
-  // const { data: visitors, error: visitorsError } = useSWR(
-  //   `${process.env.NEXT_PUBLIC_BASE_URL}/visitors.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
-  //   fetcher,
-  //   {
-  //     refreshInterval: 60000,
-  //   }
-  // );
+  const { data: visits, error: visitsError} = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/visits_data.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      dedupingInterval: 60000 * 30,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
 
-  // // Combine all errors
-  // const hasError =
-  //   bounceError || newUsersError || sessionError || visitorsError;
+  // Combine all errors
+  const hasError =
+    bounceError ||
+    newUsersError ||
+    sessionError ||
+    visitorsError ||
+    visitsError;
 
-  // Build stats data array from fetched data
-  // const statsData = [
-  //   {
-  //     label: "Total visitors",
-  //     value: `${visitors?.value}K` || "---",
-  //     trend: visitors ? { value: visitors.trend_value, isPositive: visitors.trend_is_positive } : { value: 0, isPositive: true },
-  //     icon: view,
-  //   },
-  //   {
-  //     label: "Bounce rate",
-  //     value: `${bounceRate?.value}%` || "---",
-  //     trend: bounceRate ? { value: bounceRate.trend_value, isPositive: bounceRate.trend_is_positive } : { value: 0, isPositive: true },
-  //     icon: users,
-  //   },
-  //   {
-  //     label: "Average session",
-  //     value: `${sessionData?.value} min` || "---",
-  //     trend: sessionData ? { value: sessionData.trend_value, isPositive: sessionData.trend_is_positive } : { value: 0, isPositive: true },
-  //     icon: star,
-  //   },
-  //   {
-  //     label: "New users",
-  //     value: `${newUsers?.value}` || "---",
-  //     trend: newUsers ? { value: newUsers.trend_value, isPositive: newUsers.trend_is_positive } : { value: 0, isPositive: true },
-  //     icon: newsignup,
-  //   },
-  // ];
-
-    const statsData: StatsCardProps[] = [
+  //Build stats data array from fetched data
+  const statsData = [
     {
       label: "Total visitors",
-      value: "50.8K",
-      trend: {
-        value: 28.4,
-        isPositive: true,
-      },
+      value: `${visitors?.value}K` || "---",
+      trend: visitors
+        ? {
+            value: visitors.trend_value,
+            isPositive: visitors.trend_is_positive,
+          }
+        : { value: 0, isPositive: true },
       icon: view,
     },
     {
       label: "Bounce rate",
-      value: "24.3%",
-      trend: {
-        value: 15.1,
-        isPositive: true,
-      },
+      value: `${bounceRate?.value}%` || "---",
+      trend: bounceRate
+        ? {
+            value: bounceRate.trend_value,
+            isPositive: bounceRate.trend_is_positive,
+          }
+        : { value: 0, isPositive: true },
       icon: users,
     },
     {
       label: "Average session",
-      value: "40 min",
-      trend: {
-        value: 5.6,
-        isPositive: false,
-      },
+      value: `${sessionData?.value} min` || "---",
+      trend: sessionData
+        ? {
+            value: sessionData.trend_value,
+            isPositive: sessionData.trend_is_positive,
+          }
+        : { value: 0, isPositive: true },
       icon: star,
     },
     {
       label: "New users",
-      value: "3.2K",
-      trend: {
-        value: 10.2,
-        isPositive: true,
-      },
+      value: `${newUsers?.value}` || "---",
+      trend: newUsers
+        ? {
+            value: newUsers.trend_value,
+            isPositive: newUsers.trend_is_positive,
+          }
+        : { value: 0, isPositive: true },
       icon: newsignup,
     },
   ];
+  //chart data
+  const dailySessions: VisitsData[] = visits;
 
   // Error handling
-  // if (hasError) {
-  //   return (
-  //     <div className="p-4 text-white-500 text-center">
-  //       Error loading dashboard data. Please try again later.
-  //     </div>
-  //   );
-  // }
-
-  const loggedIn = () => {
-    return {
-      id: "b67f93e2-8c42-4c23-99a8-0c5f234bcf73",
-      firstName: "John",
-      lastName: "Adams",
-      email: "johnadams@gmail.com",
-      address: "1234 Main Street",
-      city: "New York",
-      country: "USA",
-      postalCode: "10001",
-    };
-  };
+  if (hasError) {
+    return (
+      <div className="p-4 text-white-500 text-center">
+        Error loading dashboard data. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <section className="home">
       <div className="home-content">
         <header className="home-header">
           <HeaderBox
-            type="greeting"
-            title="Welcome back,"
-            user={loggedIn()?.firstName || "Guest"}
+            title="Welcome back!"
             subtext="Measure your app’s performance and report traffic data."
           />
           <div className="flex items-center justify-between gap-2 md:gap-4 md:w-[30%]">
@@ -174,7 +164,7 @@ function Home() {
           </div>
         </header>
         <div className="flex flex-row justify-evenly w-full flex-wrap">
-          {statsData.map((stat, index) => (
+          {isLoading ? <Loader />: statsData.map((stat, index) => (
             <StatsCard
               key={index}
               label={stat.label}
@@ -184,12 +174,11 @@ function Home() {
             />
           ))}
         </div>
-        {/* <WebsiteVisitsChart total={{value: statsData[0].value, isPositive:statsData[0].trend.isPositive }} /> */}
 
-        <ChartWrapper statsData={statsData} />
+        {!isLoading &&(<ChartWrapper statsData={statsData} visits={dailySessions} />)}
       </div>
     </section>
   );
 }
 
-export default Home
+export default Home;
