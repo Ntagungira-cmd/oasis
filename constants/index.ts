@@ -15,7 +15,7 @@ export const sidebarLinks = [
     label: "Settings",
   },
   {
-    imgURL: "/icons/star.svg",
+    imgURL: "/icons/Star.svg",
     route: "/features",
     label: "Features",
   },

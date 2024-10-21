@@ -18,7 +18,7 @@ const StatsCard = ({
     <Card
       className={cn(
         "bg-blue-100 text-white border-slate-800",
-        "w-full sm:w-[48%] md:w-[48%] lg:w-[32%] xl:w-[24%]",
+        "w-full sm:w-[48%] md:w-[48%] lg:w-[24%] xl:w-[24%]",
         "transition-all duration-300",
         className
       )}
