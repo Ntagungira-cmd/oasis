@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
+import { StatsCardProps } from "@/types";
 
 const StatsCard = ({
   label,
