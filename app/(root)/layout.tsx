@@ -25,7 +25,7 @@ export default async function RootLayout({
   return (
     <main className = "flex h-screen w-full">
       <SideBar/>
-      <div className="flex size-full flex-col bg-blue-600">
+      <div className="flex-1 size-full overflow-y-auto flex-col bg-blue-600">
         <div className="root-layout">
           <Image src="/icons/logo.svg" width={30} height={30} alt="logo" />
           <div>
