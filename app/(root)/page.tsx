@@ -30,7 +30,8 @@ function Home() {
     `${process.env.NEXT_PUBLIC_BASE_URL}/bounce_rate.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
     fetcher,
     {
-      dedupingInterval: 60000 * 30, // Cache for 30 minutes before refetching
+      refreshInterval: 60000 * 30, // Refetch every 30 minutes
+      dedupingInterval: 60000 * 5, // dedupe requests every 5 minutes
       revalidateOnFocus: false, // Do not refetch when the window regains focus
       revalidateOnReconnect: false, // Do not refetch when network reconnects
     }
@@ -40,7 +41,8 @@ function Home() {
     `${process.env.NEXT_PUBLIC_BASE_URL}/new_users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
     fetcher,
     {
-      dedupingInterval: 60000 * 30,
+      refreshInterval: 60000 * 30,
+      dedupingInterval: 60000 * 5,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
@@ -50,27 +52,34 @@ function Home() {
     `${process.env.NEXT_PUBLIC_BASE_URL}/session.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
     fetcher,
     {
-      dedupingInterval: 60000 * 30,
+      refreshInterval: 60000 * 30,
+      dedupingInterval: 60000 * 5,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
   );
 
-  const { data: visitors, error: visitorsError, isLoading } = useSWR(
+  const {
+    data: visitors,
+    error: visitorsError,
+    isLoading,
+  } = useSWR(
     `${process.env.NEXT_PUBLIC_BASE_URL}/visitors.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
     fetcher,
     {
-      dedupingInterval: 60000 * 30,
+      refreshInterval: 60000 * 30,
+      dedupingInterval: 60000 * 5,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
   );
 
-  const { data: visits, error: visitsError} = useSWR(
+  const { data: visits, error: visitsError } = useSWR(
     `${process.env.NEXT_PUBLIC_BASE_URL}/visits_data.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
     fetcher,
     {
-      dedupingInterval: 60000 * 30,
+      refreshInterval: 60000 * 30,
+      dedupingInterval: 60000 * 5,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
@@ -137,7 +146,7 @@ function Home() {
   // Error handling
   if (hasError) {
     return (
-      <div className="p-4 text-white-500 text-center">
+      <div className="p-4 text-2xl text-white-500 text-center">
         Error loading dashboard data. Please try again later.
       </div>
     );

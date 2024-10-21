@@ -19,44 +19,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
-import { Search } from "lucide-react";
+import { ArrowDown, Search } from "lucide-react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import useSWR from "swr";
+import { User } from "@/types";
+import Loader from "@/components/Loader";
 
-
-const CUSTOMERS_DATA = [
-  {
-    id: 1,
-    email: "john.doe@example.com",
-    firstName: "John",
-    lastName: "Doe",
-    address: "123 Main St",
-    city: "New York",
-    country: "United States",
-    postalCode: "10001",
-  },
-  {
-    id: 2,
-    email: "jane.smith@example.com",
-    firstName: "Jane",
-    lastName: "Smith",
-    address: "456 Oak Ave",
-    city: "London",
-    country: "United Kingdom",
-    postalCode: "SW1A 1AA",
-  },
-  // Add more sample data to demonstrate pagination
-  ...Array.from({ length: 18 }, (_, i) => ({
-    id: i + 3,
-    email: `user${i + 3}@example.com`,
-    firstName: `First${i + 3}`,
-    lastName: `Last${i + 3}`,
-    address: `${i + 3}00 Street`,
-    city: `City${i + 3}`,
-    country: i % 2 === 0 ? "Canada" : "Australia",
-    postalCode: `${10000 + i}`,
-  })),
-];
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return response.json();
+};
 
 function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,11 +39,38 @@ function Customers() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const uniqueCountries = Array.from(
-    new Set(CUSTOMERS_DATA.map((customer) => customer.country))
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/users.json?key=${process.env.NEXT_PUBLIC_MOCKAROO_KEY}`,
+    fetcher,
+    {
+      refreshInterval: 60000 * 30,
+      dedupingInterval: 60000 * 5,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
-  const filteredData = CUSTOMERS_DATA.filter((customer) => {
+  // Error handling
+  if (error) {
+    return (
+      <div className="p-4 text-2xl text-white-500 text-center">
+        Error loading dashboard data. Please try again later.
+      </div>
+    );
+  }
+
+  if (isLoading || !data)
+    return (
+      <div className="flex flex-row justify-center p-12 item-center w-full">
+        <Loader />
+      </div>
+    );
+
+  const uniqueCountries: string[] = Array.from(
+    new Set(data.map((customer: User) => customer.country))
+  );
+
+  const filteredData = data.filter((customer: User) => {
     const matchesSearch = Object.values(customer).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -77,7 +79,7 @@ function Customers() {
     return matchesSearch && matchesCountry;
   });
 
-  //calculate number of pages
+  // Calculate number of pages
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filteredData.slice(
@@ -163,7 +165,7 @@ function Customers() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedData.map((customer, index) => (
+              {paginatedData.map((customer: User, index: number) => (
                 <TableRow
                   key={customer.id}
                   className={
@@ -186,7 +188,7 @@ function Customers() {
                     {customer.country}
                   </TableCell>
                   <TableCell className="text-white border-none font-semibold">
-                    {customer.postalCode}
+                    {customer.postalCode ? customer.postalCode : "none"}
                   </TableCell>
                 </TableRow>
               ))}
@@ -200,6 +202,8 @@ function Customers() {
             {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
             {filteredData.length} entries
           </div>
+
+          {/* Pagination Button Controls */}
           <div className="flex space-x-2 text-blue-500 font-semibold">
             <Button
               variant="outline"
@@ -210,6 +214,22 @@ function Customers() {
             >
               Previous
             </Button>
+            {/* Pagination Numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                className={`text-blue-500 font-semibold bg-blue-100 border-none px-3 py-1 ${
+                  currentPage === page
+                    ? "bg-purple-500 text-white"
+                    : "hover:bg-purple-500 hover:text-white transition-colors"
+                }`}
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </Button>
+            ))}
             <Button
               className="text-blue-500 font-semibold bg-blue-100 border-none"
               variant="outline"
