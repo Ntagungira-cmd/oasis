@@ -51,10 +51,10 @@ For Visits
 ```
 
 ```bash
-For Clerk authentication, create a new application in Clerk and add select authentication with google then add the clerk environment variables to the .env.local file
+For Clerk authentication, create a new application in Clerk and add select authentication with Google then add the clerk environment variables to the .env.local file
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can also check it out on vercel: 
+You can also check it out on Vercel: [https://oasis-sigma-six.vercel.app/sign-in](https://oasis-sigma-six.vercel.app/sign-in)
 
